@@ -1,29 +1,15 @@
-# segirl
+# 划姬
 
-## Project setup
-```
-npm install
-```
+英文名select girl, 缩写为segirl
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+# 功能
 
-### Compiles and minifies for production
-```
-npm run build
-```
+1. 翻译
+2. 时间转换
+3. 计算
+4. base64转换
 
-### Run your tests
-```
-npm run test
-```
+# 贡献
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+1. 贡献插件 src/segirl-plugins
+2. 其它贡献
