@@ -56,8 +56,8 @@ export default {
 	mounted() {
 		document.addEventListener('mouseup', e => {
 			if (!this.show) { // 没有打开时才调整位置
-				this.pos.x = e.clientX;
-				this.pos.y = e.clientY;
+				this.pos.x = e.clientX + 20;
+				this.pos.y = e.clientY + 20;
 			}
 			if (isParent(e.target, this.$el)) return;
 			const sel = window.getSelection();
