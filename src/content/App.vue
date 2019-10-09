@@ -86,14 +86,13 @@ export default {
 	position: fixed;
 	z-index: 98000;
 	> .__segirl-controller {
-		border-radius: 50%;
-		box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
 		> img {
 			width: 45px;
 			border-radius: 50%;
 			border: 1px solid #a90e0e;
 			transition: transform 0.3s;
 			cursor: pointer;
+			box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
 			&:hover {
 				transform: scale(1.2);
 			}

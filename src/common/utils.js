@@ -1174,7 +1174,7 @@ async function getSeccode() {
 	eval(data)
 }
 
-window.seccode = '8511813095151';
+window.seccode = '8511813095152';
 
 export const _hasEnglish = content => {
 	return /[a-zA-Z]+/g.test(content)
@@ -1239,7 +1239,7 @@ export async function sougoTranslate(text) {
 		s
 	}
 	const form = Object.entries(payload)
-		.map(([k, v]) => k + '=' + v)
+		.map(([k, v]) => k + '=' + encodeURIComponent(v))
 		.join('&')
 	let ret = await sougo.post('/reventondc/translate', form);
 	/** @type {df.SougoResponse} */
