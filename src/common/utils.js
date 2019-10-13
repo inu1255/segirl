@@ -1279,3 +1279,20 @@ export async function sougoTranslate(text) {
 	}
 	return data;
 }
+
+export function clipboardRead() {
+	return new Promise(function(resolve, reject) {
+		navigator.permissions.query({ name: "clipboard-read" }).then(result => {
+			console.log(result)
+			if (result.state == "granted" || result.state == "prompt") {
+				navigator.clipboard.readText().then(text => {
+					console.log("Read from clipboard successfully: " + text);
+					resolve(text)
+				}, err => {
+					console.error("Failed to read from clipboard: " + err);
+					reject(err)
+				});
+			}
+		});
+	});
+}

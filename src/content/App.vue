@@ -7,12 +7,13 @@
 			<plugin-box v-for="(item,i) in list" v-show="item.show" :name="item.title">
 				<component :is="item" :text="text" @open="open(i)"></component>
 			</plugin-box>
+			<div class="__segirl-move-box" v-move="move"></div>
 		</div>
 	</div>
 </template>
 <script>
 import { isParent } from "../common/utils";
-import PluginBox from './PluginBox';
+import PluginBox from '../components/PluginBox';
 import * as plugins from '../segirl-plugins'
 
 export default {
@@ -126,6 +127,20 @@ export default {
 		padding-top: 5px;
 		background: rgb(255, 255, 255);
 		border-radius: 6px;
+		> .__segirl-move-box {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 0;
+			height: 0;
+			background: transparent;
+			border-top: 6px solid #aaa;
+			border-right: 6px solid transparent;
+			border-bottom: 6px solid transparent;
+			border-left: 6px solid #aaa;
+			cursor: move;
+			user-select: none;
+		}
 	}
 }
 </style>

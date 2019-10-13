@@ -4,8 +4,18 @@ import '../common/base.less';
 
 Vue.config.productionTip = false;
 
-/* eslint-disable no-new */
-let vue = new Vue({
-    el: '#root',
-    render: h => h(Root)
-});
+chrome.tabs.getCurrent(tab => {
+	if (tab) {
+		let vue = new Vue({
+			el: '#root',
+			render: h => h(Root)
+		});
+	} else {
+		let url = chrome.extension.getURL('pages/popup.html')
+		chrome.tabs.create({
+			url,
+			active: true,
+		})
+		window.close()
+	}
+})

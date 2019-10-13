@@ -1,5 +1,5 @@
 import config from '../common/config';
-import { sougoTranslate } from '../common/utils';
+import { sougoTranslate, } from '../common/utils';
 
 // chrome.contextMenus.removeAll()
 // chrome.contextMenus.create({
@@ -22,6 +22,10 @@ chrome.extension.onRequest.addListener(async function(info, sender, cb) {
 		let audio = document.createElement('audio')
 		audio.autoplay = true
 		audio.src = info.url
+	} else if (info.type == "clipboardRead") {
+		chrome.tabs.query({ active: true }, tab => {
+			chrome.tabs.sendRequest(tab[0].id, { type: 'clipboardRead' }, cb)
+		})
 	}
 })
 

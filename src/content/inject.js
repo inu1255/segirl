@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import App from './App.vue';
-
 Vue.directive('move', {
 	bind: function(el, binding, vnode) {
 		if (typeof binding.value === "function") {
