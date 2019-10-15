@@ -1251,6 +1251,13 @@ export async function sougoTranslate(text) {
 			return;
 		return sougoTranslate(text)
 	}
+	if (res.translate.errorCode === '20') {
+		var tid = 0;
+		chrome.tabs.create({ url: 'https://fanyi.sogou.com/', active: false }, tab => tid = tab.id)
+		await sleep(2e3);
+		chrome.tabs.remove(tid);
+		return sougoTranslate(text)
+	}
 	let data = {
 		result: res.translate.dit,
 	};
