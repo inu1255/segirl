@@ -5,6 +5,7 @@ import Calculate from './Calculate';
 import Datetime from './Datetime';
 import Base64 from './Base64';
 import IP from './IP';
+import HexBin from './HexBin';
 
 export {
 	Translate,
@@ -12,4 +13,5 @@ export {
 	Datetime,
 	Base64,
 	IP,
+	HexBin,
 }

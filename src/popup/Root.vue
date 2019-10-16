@@ -1,6 +1,6 @@
 <template>
 	<div class="__segirl-app">
-		<div class="__segirl-contianer">
+		<div class="__segirl-container">
 			<input type="text" v-model="text">
 			<plugin-box v-for="(item,i) in list" v-show="item.show" :name="item.title">
 				<component :is="item" :text="text" @open="open(i)"></component>
@@ -54,7 +54,8 @@ export default {
 		run() {
 			this.read().then(sel => {
 				let text = (sel + '').trim();
-				if (text) {
+				if (text && text != this.prev) {
+					this.prev = text;
 					if (text != this.text) {
 						this.text = text;
 						for (let item of this.list) {
@@ -78,6 +79,7 @@ export default {
 }
 </script>
 <style lang="less">
+@import "~@/styles/container.less";
 body {
 	margin: 0;
 }
@@ -85,40 +87,8 @@ body {
 	position: relative;
 	min-width: 550px;
 	min-height: 63px;
-	> .__segirl-contianer {
-		> input {
-			padding: 7px 3px;
-			border: none;
-			border-bottom: 1px dashed #ccc;
-			margin: 12px 0;
-			color: #666;
-		}
-		--content-font: Georgia, Nimbus Roman No9 L, Songti SC,
-			Noto Serif CJK SC, Source Han Serif SC, Source Han Serif CN, STSong,
-			AR PL New Sung, AR PL SungtiL GB, NSimSun, SimSun, TW-Sung,
-			WenQuanYi Bitmap Song, AR PL UMing CN, AR PL UMing HK,
-			AR PL UMing TW, AR PL UMing TW MBE, PMingLiU, MingLiU, serif;
-		--panel-width: 90%;
-		margin: 12px auto;
-		box-sizing: border-box;
-		display: flex;
-		width: unset;
-		height: unset;
-		text-align: initial;
-		max-width: var(--panel-width);
-		min-width: var(--panel-width);
-		color: rgb(17, 17, 17);
-		contain: layout;
-		text-rendering: optimizelegibility;
-		-webkit-font-smoothing: antialiased;
-		box-shadow: rgba(0, 0, 0, 0.12) 0px 12px 45px 0px;
-		border: unset;
-		outline: unset;
-		flex-flow: column;
-		padding: 12px;
-		padding-top: 5px;
-		background: rgb(255, 255, 255);
-		border-radius: 6px;
+	> .__segirl-container {
+		.container;
 	}
 }
 </style>

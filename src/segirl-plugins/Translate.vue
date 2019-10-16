@@ -31,7 +31,7 @@ export default {
 	},
 	methods: {
 		async translate(text) {
-			if (!text || !hasEnglish(text)) return;
+			if (!text || !(/^[a-zA-Z]/.test(text) || /^[\u4e00-\u9fa5]+$/.test(text))) return;
 			chrome.extension.sendRequest(null, { type: 'translate', text }, data => {
 				if (!data) return;
 				this.data = data;

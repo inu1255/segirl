@@ -5,6 +5,7 @@ const {cssLoaders, htmlPage} = require('./tools')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 
 let resolve = dir => path.join(__dirname, '..', 'src', dir)
+
 module.exports = {
   entry: {
     // tab: resolve('./tab'),
@@ -27,7 +28,7 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      '@': resolve('src')
+      '@': resolve('.')
     }
   },
   module: {

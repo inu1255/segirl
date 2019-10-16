@@ -3,7 +3,7 @@
 		<div v-show="show==1" class="__segirl-controller" @click="show=2" v-move="move">
 			<img :src="$url(`icons/128.png`)">
 		</div>
-		<div v-show="show==2" class="__segirl-contianer">
+		<div v-show="show==2" class="__segirl-container">
 			<plugin-box v-for="(item,i) in list" v-show="item.show" :name="item.title">
 				<component :is="item" :text="text" @open="open(i)"></component>
 			</plugin-box>
@@ -83,6 +83,7 @@ export default {
 }
 </script>
 <style lang="less">
+@import "~@/styles/container.less";
 .__segirl-app {
 	position: fixed;
 	z-index: 98000;
@@ -99,34 +100,9 @@ export default {
 			}
 		}
 	}
-	> .__segirl-contianer {
-		--content-font: Georgia, Nimbus Roman No9 L, Songti SC,
-			Noto Serif CJK SC, Source Han Serif SC, Source Han Serif CN, STSong,
-			AR PL New Sung, AR PL SungtiL GB, NSimSun, SimSun, TW-Sung,
-			WenQuanYi Bitmap Song, AR PL UMing CN, AR PL UMing HK,
-			AR PL UMing TW, AR PL UMing TW MBE, PMingLiU, MingLiU, serif;
+	> .__segirl-container {
+		.container;
 		--panel-width: 550px;
-		box-sizing: border-box;
-		position: absolute;
-		display: flex;
-		width: unset;
-		height: unset;
-		text-align: initial;
-		max-width: var(--panel-width);
-		min-width: var(--panel-width);
-		color: rgb(17, 17, 17);
-		contain: layout;
-		text-rendering: optimizelegibility;
-		-webkit-font-smoothing: antialiased;
-		box-shadow: rgba(0, 0, 0, 0.12) 0px 12px 45px 0px;
-		margin: unset;
-		border: unset;
-		outline: unset;
-		flex-flow: column;
-		padding: 12px;
-		padding-top: 5px;
-		background: rgb(255, 255, 255);
-		border-radius: 6px;
 		> .__segirl-move-box {
 			position: absolute;
 			left: 0;
