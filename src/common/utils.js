@@ -258,7 +258,7 @@ export function copy(str) {
 	str = typeof str === "string" ? str : JSON.stringify(str);
 	var success = false;
 	try {
-		var input = document.createElement('input');
+		var input = document.createElement('textarea');
 		input.style.position = 'fixed';
 		input.style.top = '-100px';
 		input.value = str;
@@ -1218,7 +1218,7 @@ export function dfs(data, fn, key, parent) {
 		}
 }
 
-export async function sougoTranslate(text) {
+export async function sougoTranslate(text, isRetry) {
 	const from = 'auto'
 	const to = 'zh-CHS'
 	const textAfterEscape = _escape(text)
@@ -1251,12 +1251,12 @@ export async function sougoTranslate(text) {
 			return;
 		return sougoTranslate(text)
 	}
-	if (res.translate.errorCode === '20') {
+	if (res.translate.errorCode === '20' && !isRetry) {
 		var tid = 0;
 		chrome.tabs.create({ url: 'https://fanyi.sogou.com/', active: false }, tab => tid = tab.id)
 		await sleep(2e3);
 		chrome.tabs.remove(tid);
-		return sougoTranslate(text)
+		return sougoTranslate(text, true)
 	}
 	let data = {
 		result: res.translate.dit,

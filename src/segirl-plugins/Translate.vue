@@ -32,7 +32,7 @@ export default {
 	methods: {
 		async translate(text) {
 			if (!text || !(/^[a-zA-Z]/.test(text) || /^[\u4e00-\u9fa5]+$/.test(text))) return;
-			chrome.extension.sendRequest(null, { type: 'translate', text }, data => {
+			chrome.runtime.sendMessage({ type: 'translate', text }, data => {
 				if (!data) return;
 				this.data = data;
 				this.$emit('open')
@@ -41,7 +41,7 @@ export default {
 		play(url) {
 			if (!url) return;
 			if (url.startsWith('//')) url = 'http:' + url;
-			chrome.extension.sendRequest(null, { type: 'playsound', url }, data => { });
+			chrome.runtime.sendMessage({ type: 'playsound', url }, data => { });
 		}
 	},
 	mounted() {

@@ -40,7 +40,7 @@ Vue.directive('move', {
 		document.removeEventListener('mouseup', el._end);
 	}
 });
-Vue.prototype.$url = s => chrome.extension.getURL(s);
+Vue.prototype.$url = s => chrome.runtime.getURL(s);
 
 const root = document.createElement('div')
 document.body.appendChild(root);

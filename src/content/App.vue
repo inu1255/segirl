@@ -5,7 +5,7 @@
 		</div>
 		<div v-show="show==2" class="__segirl-container">
 			<plugin-box v-for="(item,i) in list" v-show="item.show" :name="item.title">
-				<component :is="item" :text="text" @open="open(i)"></component>
+				<component :is="item" :text="text" :el="el" @open="open(i,$event)"></component>
 			</plugin-box>
 			<div class="__segirl-move-box" v-move="move"></div>
 		</div>
@@ -29,11 +29,14 @@ export default {
 			show: 0,
 			pos: { x: 0, y: 0 },
 			list,
-			text: '',
+			text: location.hash.slice(1),
+			el: null,
 		}
 	},
 	computed: {
 
+	},
+	watch: {
 	},
 	methods: {
 		noop() { },
@@ -49,33 +52,56 @@ export default {
 		call(info) {
 			this.show = true;
 		},
-		open(i) {
+		open(i, n) {
 			this.list[i].show = true;
-			if (!this.show) this.show = 1;
+			if (!this.show) this.show = n == null ? 1 : n;
+		},
+		setText() {
+			const sel = window.getSelection();
+			let text = (sel + '').trim();
+			if (text) {
+				this.text = text;
+				console.log(text)
+			}
+			else {
+				this.text = "";
+				this.show = 0;
+			}
 		},
 	},
 	mounted() {
 		document.addEventListener('mouseup', e => {
+			if (e.button != 0) return;
 			if (!this.show) { // 没有打开时才调整位置
 				this.pos.x = e.clientX + 20;
 				this.pos.y = e.clientY + 20;
 			}
 			if (isParent(e.target, this.$el)) return;
-			const sel = window.getSelection();
-			let text = (sel + '').trim();
-			if (text) {
-				if (text == this.text) {
-					this.show = 1;
-				} else {
-					this.text = text;
-					for (let item of this.list) {
-						item.show = false;
-					}
-				}
-				console.log(text)
+			for (let item of this.list) {
+				item.show = false;
 			}
-			else this.show = 0;
-		})
+			this.setText()
+		});
+		document.addEventListener('contextmenu', e => {
+			if (!this.show) { // 没有打开时才调整位置
+				this.pos.x = e.clientX + 20;
+				this.pos.y = e.clientY + 20;
+			}
+			if (isParent(e.target, this.$el)) return;
+			for (let item of this.list) {
+				item.show = false;
+			}
+			this.setText()
+			if (e.altKey) {
+				this.el = e.target;
+				this.pos.x = e.clientX + 20;
+				this.pos.y = e.clientY + 20;
+				this.show = 2;
+				e.preventDefault()
+			} else {
+				this.el = null;
+			}
+		});
 	},
 	components: Object.assign({}, plugins, {
 		PluginBox,

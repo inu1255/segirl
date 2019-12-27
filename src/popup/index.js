@@ -11,7 +11,7 @@ chrome.tabs.getCurrent(tab => {
 			render: h => h(Root)
 		});
 	} else {
-		let url = chrome.extension.getURL('pages/popup.html')
+		let url = chrome.runtime.getURL('pages/popup.html')
 		chrome.tabs.create({
 			url,
 			active: true,

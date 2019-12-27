@@ -19,29 +19,26 @@ export default {
 	data() {
 		return {
 			radix: 10,
-			open: false,
 		}
 	},
 	watch: {
 		text() {
 			let text = this.text
+			if (!text) return
 			let num = +text;
 			if (isNaN(num) || /^0x/.test(text)) {
 				num = parseInt(text, 16)
 				this.radix = 16;
 			} else this.radix = 10;
-			if (isNaN(num) || num.toString().length + 2 < text.length) return this.open = false;
-			this.open = true
+			if (isNaN(num) || num.toString().length + 2 < text.length) return
 			this.$emit('open')
 		}
 	},
 	computed: {
 		num() {
-			if (!this.open) return; // 防止额外的计算
 			return parseInt(this.text, this.radix)
 		},
 		list() {
-			if (!this.open) return; // 防止额外的计算
 			let n = this.num
 			let list = [];
 			list.push({ key: '二进制', value: n.toString(2) })

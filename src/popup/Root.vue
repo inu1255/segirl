@@ -52,19 +52,22 @@ export default {
 			return clipboardRead()
 		},
 		run() {
-			this.read().then(sel => {
-				let text = (sel + '').trim();
-				if (text && text != this.prev) {
-					this.prev = text;
-					if (text != this.text) {
-						this.text = text;
-						for (let item of this.list) {
-							item.show = false;
+			if (location.hash.length > 1)
+				this.text = location.hash.slice(1)
+			else
+				this.read().then(sel => {
+					let text = (sel + '').trim();
+					if (text && text != this.prev) {
+						this.prev = text;
+						if (text != this.text) {
+							this.text = text;
+							for (let item of this.list) {
+								item.show = false;
+							}
 						}
+						console.log(text)
 					}
-					console.log(text)
-				}
-			});
+				});
 		}
 	},
 	mounted() {
