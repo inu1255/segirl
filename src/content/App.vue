@@ -29,7 +29,7 @@ export default {
 			show: 0,
 			pos: { x: 0, y: 0 },
 			list,
-			text: location.hash.slice(1),
+			text: location.protocol == "chrome-extension:" ? location.hash.slice(1) : "",
 			el: null,
 		}
 	},
