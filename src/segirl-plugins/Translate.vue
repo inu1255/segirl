@@ -15,6 +15,7 @@ export default {
 	title: "搜狗翻译",
 	props: {
 		text: String,
+		show: Boolean,
 	},
 	data() {
 		return {
@@ -23,7 +24,13 @@ export default {
 	},
 	watch: {
 		text() {
-			this.translate(this.text)
+			if (!this.text) return;
+			this.$emit('open')
+		},
+		show() {
+			if (this.show && this.prev != this.text) {
+				this.translate(this.text)
+			}
 		}
 	},
 	computed: {
@@ -31,7 +38,7 @@ export default {
 	},
 	methods: {
 		async translate(text) {
-			if (!text || !(/^[a-zA-Z]/.test(text) || /^[\u4e00-\u9fa5]+$/.test(text))) return;
+			this.prev = text
 			chrome.runtime.sendMessage({ type: 'translate', text }, data => {
 				if (!data) return;
 				this.data = data;

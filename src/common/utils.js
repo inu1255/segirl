@@ -1219,6 +1219,7 @@ export function dfs(data, fn, key, parent) {
 }
 
 export async function sougoTranslate(text, isRetry) {
+	if (!text) return
 	const from = 'auto'
 	const to = 'zh-CHS'
 	const textAfterEscape = _escape(text)
@@ -1241,6 +1242,7 @@ export async function sougoTranslate(text, isRetry) {
 	const form = Object.entries(payload)
 		.map(([k, v]) => k + '=' + encodeURIComponent(v))
 		.join('&')
+	console.log("translate: ", text)
 	let ret = await sougo.post('/reventondc/translate', form);
 	/** @type {df.SougoResponse} */
 	let res = ret.data && JSON.parse(ret.data);
