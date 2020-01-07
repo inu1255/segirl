@@ -1,5 +1,6 @@
 import config from '../common/config';
-import { sougoTranslate, } from '../common/utils';
+import * as utils from '../common/utils';
+window.utils = utils
 
 chrome.contextMenus.removeAll()
 chrome.contextMenus.create({
@@ -20,7 +21,7 @@ chrome.runtime.onMessage.addListener(function(info, sender, cb) {
 		if (info.type == 'translate') {
 			let data = translate_cache[info.text]
 			if (!data) {
-				data = await sougoTranslate(info.text)
+				data = await utils.sougoTranslate(info.text)
 				translate_cache[info.text] = data;
 			}
 			cb(data);
@@ -57,7 +58,9 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
 		}
 	}
 	// 只有插件才加
-	if (!details.initiator || !details.initiator.startsWith('chrome-extension://')) return;
+	console.log(details.initiator)
+	var initiaor = details.initiator || details.documentUrl
+	if (!initiaor || !/^\w+-extension:/.test(initiaor)) return;
 	for (var i = 0; i < requestHeaders.length; ++i) {
 		var header = requestHeaders[i];
 		if (header.name === '_referer') {
@@ -69,7 +72,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
 			return { requestHeaders };
 		}
 	}
-}, { urls: ["<all_urls>"], types: ['xmlhttprequest'] }, ["blocking", "requestHeaders", "extraHeaders"]);
+}, { urls: ["<all_urls>"], types: ['xmlhttprequest'] }, utils.isFirefox ? ["blocking", "requestHeaders"] : ["blocking", "requestHeaders", "extraHeaders"]);
 
 chrome.webRequest.onHeadersReceived.addListener(function(details) {
 	if (!config.cross) return;

@@ -1,8 +1,10 @@
 import Vue from 'vue';
 import Root from './Root.vue';
 import '../common/base.less';
+import * as utils from '../common/utils'
 
 Vue.config.productionTip = false;
+window.utils = utils
 
 chrome.tabs.getCurrent(tab => {
 	if (tab) {

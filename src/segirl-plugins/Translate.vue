@@ -25,7 +25,10 @@ export default {
 	watch: {
 		text() {
 			if (!this.text) return;
-			this.$emit('open')
+			if (/^\w+-extension:/.test(location.href))
+				this.translate(this.text)
+			else
+				this.$emit('open')
 		},
 		show() {
 			if (this.show && this.prev != this.text) {
