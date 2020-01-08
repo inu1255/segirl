@@ -11,6 +11,11 @@
 5. base64转换
 6. 复制代码 `alt+右键`
 
+# 截图
+
+![](screenshot/screen1.png)
+![](screenshot/screen2.png)
+
 # 贡献
 
 1. 贡献插件 src/segirl-plugins

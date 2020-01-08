@@ -58,7 +58,6 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function(details) {
 		}
 	}
 	// 只有插件才加
-	console.log(details.initiator)
 	var initiaor = details.initiator || details.documentUrl
 	if (!initiaor || !/^\w+-extension:/.test(initiaor)) return;
 	for (var i = 0; i < requestHeaders.length; ++i) {
