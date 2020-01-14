@@ -29,7 +29,7 @@ export default {
 			show: 0,
 			pos: { x: 0, y: 0 },
 			list,
-			text: location.protocol == "chrome-extension:" ? location.hash.slice(1) : "",
+			text: location.protocol == "chrome-extension:" ? decodeURIComponent(location.hash.slice(1)) : "",
 			el: null,
 		}
 	},
@@ -66,6 +66,7 @@ export default {
 			else {
 				this.text = "";
 				this.show = 0;
+				this.el = null;
 			}
 		},
 	},
@@ -80,7 +81,9 @@ export default {
 			for (let item of this.list) {
 				item.show = false;
 			}
-			this.setText()
+			setTimeout(() => {
+				this.setText()
+			})
 		});
 		document.addEventListener('contextmenu', e => {
 			if (!this.show) { // 没有打开时才调整位置
@@ -91,7 +94,6 @@ export default {
 			for (let item of this.list) {
 				item.show = false;
 			}
-			this.setText()
 			if (e.altKey) {
 				this.el = e.target;
 				this.pos.x = e.clientX + 20;

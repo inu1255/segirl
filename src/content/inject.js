@@ -47,8 +47,7 @@ document.body.appendChild(root);
 let data = {
 	show: false,
 }
-var vue = new Vue({
+new Vue({
 	data,
 	render: h => h(App)
 }).$mount(root);
-console.log(vue)

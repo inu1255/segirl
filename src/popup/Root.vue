@@ -53,7 +53,7 @@ export default {
 		},
 		run() {
 			if (location.hash.length > 1)
-				this.text = location.hash.slice(1)
+				this.text = decodeURIComponent(location.hash.slice(1))
 			else
 				this.read().then(sel => {
 					let text = (sel + '').trim();
