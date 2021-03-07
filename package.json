@@ -15,7 +15,7 @@
   "scripts": {
     "lint": "eslint --ext .js,.vue src",
     "start": "webpack --config ./core/webpack.dev.js --hide-modules",
-    "build": "webpack --config ./core/webpack.prod.js -p --progress  --hide-modules --colors"
+    "build": "webpack --config ./core/webpack.prod.js -p --progress  --hide-modules --colors && rm build.zip && cd build && zip ../build.zip -r ."
   },
   "devDependencies": {
     "@types/chrome": "0.0.89",

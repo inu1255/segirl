@@ -96,6 +96,14 @@ export default {
 			}
 			if (e.altKey) {
 				this.el = e.target;
+				if (e.target.tagName == 'INPUT') {
+					if (e.target.type == 'password') {
+						e.target.type = 'text'
+						e.target._type = 'password'
+					} else if (e.target._type) {
+						e.target.type = e.target._type;
+					}
+				}
 				this.pos.x = e.clientX + 20;
 				this.pos.y = e.clientY + 20;
 				this.show = 2;

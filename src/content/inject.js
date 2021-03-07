@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import App from './App.vue';
+import './wenku.js'
 Vue.directive('move', {
 	bind: function(el, binding, vnode) {
 		if (typeof binding.value === "function") {
