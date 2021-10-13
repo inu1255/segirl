@@ -5,6 +5,7 @@ import Base64 from './Base64';
 import IP from './IP';
 import HexBin from './HexBin';
 import CodeCopy from './CodeCopy';
+import TableParams from './TableParams';
 
 export {
 	Translate,
@@ -14,4 +15,5 @@ export {
 	IP,
 	HexBin,
 	CodeCopy,
+	TableParams,
 }

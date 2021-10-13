@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener(function(info, sender, cb) {
 		if (info.type == 'translate') {
 			let data = translate_cache[info.text]
 			if (!data) {
-				data = await utils.sougoTranslate(info.text)
+				data = await utils.translate(info.text)
 				translate_cache[info.text] = data;
 			}
 			cb(data);

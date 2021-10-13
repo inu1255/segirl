@@ -10,3 +10,4 @@ yarn.lock
 
 # Backpack build
 build
+package-lock.json
