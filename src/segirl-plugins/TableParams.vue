@@ -30,6 +30,7 @@ export default {
 	computed: {},
 	methods: {
 		getCode(result) {
+			const el = this.table;
 			let ss = location.href.split(/#|\?/)[0].split("/");
 			let name = "";
 			while (!name && ss.length) name = ss.pop();
