@@ -4,7 +4,7 @@
 			<img :src="$url(`icons/128.png`)">
 		</div>
 		<div v-show="show==2" class="__segirl-container">
-			<plugin-box v-for="(item,i) in list" v-show="item.show" :name="item.title">
+			<plugin-box v-for="(item,i) in list" :key="i" v-show="item.show" :name="item.title">
 				<component :is="item" :text="text" :el="el" :show="show==2" @open="open(i,$event)"></component>
 			</plugin-box>
 			<div class="__segirl-move-box" v-move="move"></div>

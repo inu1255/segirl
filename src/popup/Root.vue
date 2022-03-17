@@ -2,7 +2,7 @@
 	<div class="__segirl-app">
 		<div class="__segirl-container">
 			<input type="text" v-model="text">
-			<plugin-box v-for="(item,i) in list" v-show="item.show" :name="item.title">
+			<plugin-box v-for="(item,i) in list" :key="i" v-show="item.show" :name="item.title">
 				<component :is="item" :text="text" @open="open(i)"></component>
 			</plugin-box>
 		</div>
