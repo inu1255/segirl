@@ -20,7 +20,6 @@ export default {
 	watch: {
 		el() {
 			let el = this.el;
-			console.log(el);
 			while (el && el.tagName != "TABLE") el = el.parentElement;
 			if (!el) return;
 			this.table = el;

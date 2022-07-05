@@ -6,6 +6,7 @@ import IP from './IP';
 import HexBin from './HexBin';
 import CodeCopy from './CodeCopy';
 import TableParams from './TableParams';
+import XiaoyaojiParams from './XiaoyaojiParams';
 
 export {
 	Translate,
@@ -16,4 +17,5 @@ export {
 	HexBin,
 	CodeCopy,
 	TableParams,
+	XiaoyaojiParams,
 }
