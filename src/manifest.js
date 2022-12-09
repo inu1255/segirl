@@ -1,42 +1,44 @@
 module.exports = {
-	name: '划姬',
-	version: '1.0.2',
-	description: '不止是划词翻译,你的划词贤内助',
-	author: 'inu1255',
+	name: "划姬",
+	version: "1.0.2",
+	description: "不止是划词翻译,你的划词贤内助",
+	author: "inu1255",
 	homepage_url: "https://github.com/inu1255/segirl",
 	manifest_version: 2,
-	icons: { '16': 'icons/16.png', '48': 'icons/48.png', '96': 'icons/96.png', '128': 'icons/128.png' },
+	icons: {16: "icons/16.png", 48: "icons/48.png", 96: "icons/96.png", 128: "icons/128.png"},
 	permissions: [
-		'https://fanyi.sogou.com/',
-		// 'tabs',
+		"https://fanyi.sogou.com/",
+		"tabs",
 		// 'cookies',
 		// 'background',
-		// 'activeTab',
-		'contextMenus',
+		"activeTab",
+		"contextMenus",
 		// 'unlimitedStorage',
-		'storage',
-		'notifications',
+		"storage",
+		"notifications",
 		// 'identity',
 		// 'identity.email',
-		'webRequest',
-		'webRequestBlocking'
+		"webRequest",
+		"webRequestBlocking",
 	],
 	browser_action: {
-		default_title: '划姬',
+		default_title: "划姬",
 		default_icon: "icons/48.png",
-		default_popup: 'pages/popup.html'
+		default_popup: "popup.html",
 	},
 	background: {
-		page: 'pages/background.html'
+		page: "background.html",
 	},
-	//   devtools_page: 'pages/devtools.html',
-	// options_page: 'pages/options.html',
-	content_scripts: [{
-		js: ['js/manifest.js', 'js/vendor.js', 'js/inject.js'],
-		run_at: 'document_end',
-		matches: ['<all_urls>'],
-		all_frames: true
-	}],
+	//   devtools_page: 'devtools.html',
+	// options_page: 'options.html',
+	content_scripts: [
+		{
+			js: ["js/content.js"],
+			run_at: "document_end",
+			matches: ["<all_urls>"],
+			all_frames: true,
+		},
+	],
 	content_security_policy: "script-src 'self' 'unsafe-eval'; object-src 'self'",
-	web_accessible_resources: ['icons/*']
+	web_accessible_resources: ["icons/*"],
 };

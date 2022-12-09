@@ -1,3 +1,6 @@
 core/*.js
 core/*/*.js
 build/*.js
+static/
+*.html
+*.ejs

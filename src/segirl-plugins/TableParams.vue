@@ -5,9 +5,10 @@
 	</div>
 </template>
 <script>
-import { copy } from "../common/utils";
+import {copy} from "../common/utils";
 export default {
 	title: "接口参数",
+	components: {},
 	props: {
 		el: {},
 	},
@@ -17,6 +18,7 @@ export default {
 			list: [],
 		};
 	},
+	computed: {},
 	watch: {
 		el() {
 			let el = this.el;
@@ -26,7 +28,7 @@ export default {
 			this.$emit("open");
 		},
 	},
-	computed: {},
+	mounted() {},
 	methods: {
 		getCode(result) {
 			const el = this.table;
@@ -36,9 +38,7 @@ export default {
 			name = name.split(".")[0];
 			let trs = el.querySelectorAll("tr");
 			let lines = [
-				`export interface ${name[0].toUpperCase() + name.slice(1)}${
-					result ? `Result` : `Param`
-				} {`,
+				`export interface ${name[0].toUpperCase() + name.slice(1)}${result ? `Result` : `Param`} {`,
 			];
 			let ignore = result
 				? new Set()
@@ -68,8 +68,7 @@ export default {
 				else if (/^long/.test(type)) type = `number${tail} // long`;
 				else if (type == "float") type = `number${tail} // float`;
 				else if ((m = /List<(\w+)>/.exec(type))) type = `${m[1]}[]${tail}`;
-				else if ((m = /string\((\d+)\)/.exec(type)))
-					type = `string${tail} // maxLength: ${m[1]}`;
+				else if ((m = /string\((\d+)\)/.exec(type))) type = `string${tail} // maxLength: ${m[1]}`;
 				else if ((m = /string\((\d+)-(\d+)\)/.exec(type)))
 					type = `string${tail} // minLength: ${m[1]} maxLength: ${m[2]}`;
 				else if (/json/.test(type)) {
@@ -82,9 +81,7 @@ export default {
 				} else type = `${type}${tail}`;
 				let required = /是/.test(tds[4].innerText);
 				lines.push("\t".repeat(deep + 1) + `/** ${desc} */`);
-				lines.push(
-					"\t".repeat(deep + 1) + `${name}${required ? "" : "?"}: ${type}`
-				);
+				lines.push("\t".repeat(deep + 1) + `${name}${required ? "" : "?"}: ${type}`);
 			}
 			while (deeps.length) {
 				let deep = deeps.length;
@@ -105,8 +102,6 @@ export default {
 			}
 		},
 	},
-	mounted() {},
-	components: {},
 };
 </script>
 <style lang="less">

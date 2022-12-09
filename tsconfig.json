@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2018",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "lib": [
+      "ESNext",
+      "ESNext.AsyncIterable",
+      "DOM"
+    ],
+    "esModuleInterop": true,
+    "allowJs": true,
+    "sourceMap": true,
+    // "strict": true,
+    "noEmit": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "baseUrl": "src",
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ],
+      "~/*": [
+        "./*"
+      ]
+    },
+    "types": [
+      "webpack-env",
+      "chrome"
+    ]
+  },
+  "include": [
+    "src",
+    "@types"
+  ],
+  "exclude": [
+    "node_modules",
+    ".nuxt",
+    "dist",
+    "src/static",
+    "src/static-dist"
+  ]
+}

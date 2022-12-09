@@ -6,9 +6,10 @@
 	</div>
 </template>
 <script>
-import { copy, CamelCase } from "../common/utils";
+import {copy, CamelCase} from "../common/utils";
 export default {
 	title: "小幺鸡参数",
+	components: {},
 	props: {
 		el: {},
 	},
@@ -18,6 +19,7 @@ export default {
 			list: [],
 		};
 	},
+	computed: {},
 	watch: {
 		el() {
 			let el = this.el;
@@ -27,19 +29,13 @@ export default {
 			this.$emit("open");
 		},
 	},
-	computed: {},
+	mounted() {},
 	methods: {
 		readLine(tr, lines, result, deep) {
 			let tail = ";";
 			let ignore = result
 				? new Set()
-				: new Set([
-						"deviceid",
-						"client",
-						"client_ver",
-						"soft_version",
-						"source",
-				  ]);
+				: new Set(["deviceid", "client", "client_ver", "soft_version", "source"]);
 			let tds = Array.from(tr.children);
 			let subs = [];
 			if (
@@ -47,9 +43,7 @@ export default {
 				tr.nextElementSibling.className == "sub" &&
 				tr.nextElementSibling.childElementCount
 			) {
-				let trs = tr.nextElementSibling.querySelectorAll(
-					".sub>.div-table-line>.cb"
-				);
+				let trs = tr.nextElementSibling.querySelectorAll(".sub>.div-table-line>.cb");
 				for (let i = 0; i < trs.length; i++) {
 					let tr = trs[i];
 					this.readLine(tr, subs, ignore, deep + 1);
@@ -64,21 +58,18 @@ export default {
 			else if (/^long/.test(type)) type = `number${tail} // long`;
 			else if (type == "float") type = `number${tail} // float`;
 			else if (type == "array") type = `any[]${tail}`;
-			else if (type == "object")
-				type = `{\n${subs.join("\n")}\n${"\t".repeat(deep + 1)}}${tail}`;
-			else if ((m = /array\[(\w+)\]/.exec(type)))
-				type = `{\n${subs.join("\n")}\n${"\t".repeat(deep + 1)}}[]${tail}`;
-			else if ((m = /List<(\w+)>/.exec(type))) type = `${m[1]}[]${tail}`;
-			else if ((m = /string\((\d+)\)/.exec(type)))
-				type = `string${tail} // maxLength: ${m[1]}`;
+			else if (type == "object") type = `{\n${subs.join("\n")}\n${"\t".repeat(deep + 1)}}${tail}`;
+			else if ((m = /array\[(\w+)\]/.exec(type))) {
+				if (m[1] == "object") type = `{\n${subs.join("\n")}\n${"\t".repeat(deep + 1)}}[]${tail}`;
+				else type = `${m[1]}[]${tail}`;
+			} else if ((m = /List<(\w+)>/.exec(type))) type = `${m[1]}[]${tail}`;
+			else if ((m = /string\((\d+)\)/.exec(type))) type = `string${tail} // maxLength: ${m[1]}`;
 			else if ((m = /string\((\d+)-(\d+)\)/.exec(type)))
 				type = `string${tail} // minLength: ${m[1]} maxLength: ${m[2]}`;
 			else type = `${type || "string"}${tail}`;
 			let required = /true/.test(tds[1].innerText);
 			if (desc) lines.push("\t".repeat(deep + 1) + `/** ${desc} */`);
-			lines.push(
-				"\t".repeat(deep + 1) + `${name}${required ? "" : "?"}: ${type}`
-			);
+			lines.push("\t".repeat(deep + 1) + `${name}${required ? "" : "?"}: ${type}`);
 		},
 		getCode(result) {
 			const el = this.table;
@@ -87,14 +78,15 @@ export default {
 			let name = m[1].split("/").pop();
 			console.log(name);
 			let trs = el.querySelectorAll(".div-table>.div-table-line>.cb");
-			let lines = [
-				`export interface ${CamelCase(name)}${result ? `Result` : `Param`} {`,
-			];
+			let lines = [`export interface ${CamelCase(name)}${result ? `Result` : `Param`} {`];
+			if (!result) {
+				lines.unshift(`import httpv1 from "../../common/httpv1";\n`);
+			}
 			for (let i = 0; i < trs.length; i++) {
 				let tr = trs[i];
 				this.readLine(tr, lines, result, 0);
 			}
-			lines.push("}");
+			lines.push("}\n\n");
 			return lines.join("\n");
 		},
 		getFnCode() {
@@ -105,10 +97,11 @@ export default {
 			let name = url.split("/").pop();
 			console.log(name);
 			let lines = [
-				`export default function (data: ${CamelCase(
+				`export default function (data: ${CamelCase(name)}Param): Promise<${CamelCase(
 					name
-				)}Param): Promise<${CamelCase(name)}Result> {`,
-				`\treturn httpv1.post("/v1${url.split("v1")[1]}", data);`,
+				)}Result> {`,
+				`\treturn httpv1.post("/v1${url.split("v1")[1]}", data)`,
+				`\t\t.then((x) => (x.code == 0 ? x.data : Promise.reject(x)))`,
 				`}`,
 			];
 			return lines.join("\n");
@@ -132,8 +125,6 @@ export default {
 			}
 		},
 	},
-	mounted() {},
-	components: {},
 };
 </script>
 <style lang="less">
