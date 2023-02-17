@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "vue-cli-service  --env.NODE_ENV=development build-watch --mode development",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build && node lib/zip",
     "lint": "eslint --ext \".js,.vue\" --ignore-path .eslintignore .",
     "lint-fix": "eslint --ext \".js,.vue\" --ignore-path .eslintignore . --fix --debug"
   },
@@ -27,6 +27,7 @@
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-typescript": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
+    "adm-zip": "^0.5.9",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-local-rules": "^1.1.0",
