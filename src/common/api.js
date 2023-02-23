@@ -1,4 +1,7 @@
 import {md5Sync, sleep} from "./utils";
+import Axios from "axios";
+
+const axios = Axios.create();
 
 function _escape(text) {
 	const ele = document.createElement("div");
@@ -175,6 +178,42 @@ export async function sougoTranslate(text, isRetry) {
 	return data;
 }
 
-export async function translate(q, to = "auto") {
-	return sougoTranslate(q);
+export async function translateAll(source) {
+	let data = await caiyunTranslate(source);
+	return data.target.map((x) => x.target);
 }
+
+export async function translate(fromText) {
+	if (/\s/.test(fromText)) {
+		let target = await translateAll([fromText]);
+		return {result: target[0]};
+	}
+	let {data} = await axios.post("https://nnapi.nnxieli.com/lookup_word", {
+		fromLang: "en",
+		fromProduct: "pony",
+		fromText,
+		toLang: "zh",
+	});
+	if (!data.status) throw data;
+	data = data.data;
+	let result = data.word;
+	let dict = [];
+	if (data.definition) {
+		let m = /^\s*\w+\.?\s+/.exec(data.definition);
+		if (m) dict.push({pos: m[0].trim(), text: data.definition.slice(m[0].length)});
+		else dict.push({text: data.definition});
+	}
+	if (data.translation) {
+		let m = /^\s*\w+\.?\s+/.exec(data.translation);
+		if (m) dict.push({pos: m[0].trim(), text: data.translation.slice(m[0].length)});
+		else dict.push({text: data.translation});
+	}
+	dict.forEach((x) => {
+		if (x.pos && !x.pos.endsWith(".")) x.pos += ".";
+	});
+	return {result, dict};
+}
+
+// export async function translate(q, to = "auto") {
+// 	return sougoTranslate(q);
+// }
