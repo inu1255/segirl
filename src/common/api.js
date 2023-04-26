@@ -97,21 +97,22 @@ const sougo = (function () {
 	};
 })();
 
+let window_seccode = "";
 // 获取 seccode
 async function getSeccode() {
 	const data = await sougo.get("https://fanyi.sogou.com/text");
 	let m = /secretCode":\s*(\d+)/.exec(data);
-	if (m) window.seccode = m[1];
+	if (m) window_seccode = m[1];
 }
 
-window.seccode = "109984457";
+window_seccode = "109984457";
 
 export async function sougoTranslate(text, isRetry) {
 	if (!text) return;
 	const from = "auto";
 	const to = "zh-CHS";
 	const textAfterEscape = _escape(text);
-	const s = md5Sync("" + from + to + textAfterEscape + window.seccode);
+	const s = md5Sync("" + from + to + textAfterEscape + window_seccode);
 	const payload = {
 		from,
 		to,
@@ -135,9 +136,9 @@ export async function sougoTranslate(text, isRetry) {
 	let ret = await sougo.post("https://fanyi.sogou.com/reventondc/translate", form);
 	let res = ret.data || ret;
 	if (!res || res.translate.errorCode === "10") {
-		const lastSecode = window.seccode;
+		const lastSecode = window_seccode;
 		await getSeccode();
-		if (window.seccode === lastSecode) return;
+		if (window_seccode === lastSecode) return;
 		return sougoTranslate(text);
 	}
 	if (res.translate.errorCode === "20" && !isRetry) {

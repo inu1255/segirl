@@ -4,10 +4,9 @@ module.exports = {
 	description: "不止是划词翻译,你的划词贤内助",
 	author: "inu1255",
 	homepage_url: "https://github.com/inu1255/segirl",
-	manifest_version: 2,
+	manifest_version: 3,
 	icons: {16: "icons/16.png", 48: "icons/48.png", 96: "icons/96.png", 128: "icons/128.png"},
 	permissions: [
-		"https://fanyi.sogou.com/",
 		"tabs",
 		// 'cookies',
 		// 'background',
@@ -18,16 +17,20 @@ module.exports = {
 		"notifications",
 		// 'identity',
 		// 'identity.email',
+		"offscreen",
 		"webRequest",
 		"webRequestBlocking",
 	],
-	browser_action: {
+	host_permissions: ["https://fanyi.sogou.com/"],
+	optional_host_permissions: ["*://*/*"],
+	action: {
 		default_title: "划姬",
 		default_icon: "icons/48.png",
 		default_popup: "popup.html",
 	},
 	background: {
-		page: "background.html",
+		service_worker: "js/background.js",
+		type: "module",
 	},
 	//   devtools_page: 'devtools.html',
 	// options_page: 'options.html',
@@ -39,6 +42,11 @@ module.exports = {
 			all_frames: true,
 		},
 	],
-	content_security_policy: "script-src 'self' 'unsafe-eval'; object-src 'self'",
-	web_accessible_resources: ["icons/*"],
+	// content_security_policy: "script-src 'self' 'unsafe-eval'; object-src 'self'",
+	web_accessible_resources: [
+		{
+			matches: ["*://*/*"],
+			resources: ["icons/*"],
+		},
+	],
 };

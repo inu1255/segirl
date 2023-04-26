@@ -1,6 +1,5 @@
 const path = require("path");
 const fs = require("fs");
-const {merge} = require("webpack-merge");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 const isDevMode = process.env.NODE_ENV === "development";
@@ -10,6 +9,7 @@ module.exports = {
 	pages: getPages(),
 	filenameHashing: false,
 	chainWebpack: (config) => {
+		console.log("chainWebpack");
 		config.plugin("copy").use(CopyWebpackPlugin, [
 			{
 				patterns: [
@@ -25,19 +25,20 @@ module.exports = {
 					{
 						from: path.resolve(`public/`),
 						to: `${path.resolve("dist")}/`,
+						globOptions: {
+							ignore: ["**/index.html"],
+						},
 					},
 				],
 			},
 		]);
 	},
 	configureWebpack(config) {
-		merge(config, {
-			output: {
-				filename: `[name].js`,
-				chunkFilename: `[name].js`,
-			},
-			devtool: isDevMode ? "inline-source-map" : false,
-		});
+		console.log("configureWebpack");
+		config.entry.background = path.join(__dirname, "./src/entry/background.js");
+		if (isDevMode) {
+			config.devtool = "source-map";
+		}
 	},
 	css: {
 		extract: false, // Make sure the css is the same
@@ -49,6 +50,7 @@ function getPages() {
 
 	fs.readdirSync(path.resolve(`src/entry`)).forEach((name) => {
 		const fileName = path.basename(name, path.extname(name));
+		if (fileName == "background") return;
 		pages[fileName] = {
 			entry: `src/entry/${name}`,
 			template: "public/index.html",
