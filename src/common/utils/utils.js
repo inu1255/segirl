@@ -14,16 +14,19 @@ export function encodeURI(str) {
 /**
  * 将data编码为URL的query参数
  * @param {{[key:string]:any}} data 要编码的数据。
+ * @param {number} [limit] 限制过大的参数
  * @returns {string} 编码后的字符串
  * @example
  * encodeQuery({a: 1, b: 2}) // a=1&b=2
  */
-export function encodeQuery(data) {
+export function encodeQuery(data, limit) {
 	var ss = [];
 	for (var k in data) {
 		var v = data[k];
-		if (v == null) continue;
+		if (v == null || typeof v === "function") continue;
 		if (typeof v === "object") v = JSON.stringify(v);
+		else v = v.toString();
+		if (v.length > limit) continue;
 		ss.push(encodeURI(k) + "=" + encodeURI(v));
 	}
 	return ss.join("&");
@@ -199,7 +202,7 @@ export function getDay(date) {
  * format("YYYY-MM-DD hh:mm:ss", new Date()) // "2019-01-01 00:00:00"
  */
 export function format(format, t) {
-	t = new Date(t);
+	t = t == null ? new Date() : new Date(t);
 	if (!format) {
 		let now = new Date();
 		if (getDay(now) - getDay(t) == 1) format = "昨天 hh:mm";
@@ -1422,8 +1425,10 @@ export function copyString(s) {
 
 /**
  * 解析xml字符串
+ * @typedef {{nodeName:string;attrs:{[key:string]:string};childNodes:(parseXMLNode|string)[]}} parseXMLNode
+ *
  * @param {string} xml
- * @returns {}
+ * @returns {parseXMLNode}
  * @example
  * parseXML('<a src="124" type="txt"><b mode="123">1</b><b mode="456">2</b></a>')
  * // [{nodeName:'a',attrs:{src:'124',type:'txt'},childNodes:[{nodeName:'b',attrs:{mode:'123'},childNodes:['1']},{nodeName:'b',attrs:{mode:'456'},childNodes:['2']}]}]
@@ -1435,7 +1440,8 @@ export function parseXML(xml) {
 	let prev;
 	let stack = [];
 	while (m) {
-		let value = xml.slice(prev ? prev.index + prev[0].length : 0, m.index).trim();
+		let value = xml.slice(prev ? prev.index + prev[0].length : 0, m.index);
+		if (!(stack.length && stack[stack.length - 1].isPre)) value = value.trim();
 		if (value) {
 			let node = copyString(value);
 			if (stack.length === 0) tree.push(node);
@@ -1443,23 +1449,29 @@ export function parseXML(xml) {
 		}
 		let [, nodeName, text] = m;
 		if (nodeName[0] === "/") {
-			let node = stack.pop();
-			if (node.nodeName !== nodeName.slice(1))
-				throw new Error(`xml格式错误,${nodeName}与${node.nodeName}不匹配`);
-			if (stack.length === 0) tree.push(node);
-			else stack[stack.length - 1].childNodes.push(node);
+			while (stack.length) {
+				let node = stack.pop();
+				if (stack.length === 0) tree.push(node);
+				else stack[stack.length - 1].childNodes.push(node);
+				if (node.nodeName == nodeName.slice(1)) break;
+				console.warn(`xml格式错误,${node.nodeName}与${nodeName}不匹配`);
+			}
 		} else {
 			let attrs = decodeAttribute(text, true);
 			for (let key in attrs) {
 				attrs[key] = copyString(attrs[key]);
 			}
 			nodeName = copyString(nodeName);
-			if (text[text.length - 1] === "/") {
+			if (text[text.length - 1] === "/" || nodeName.toLowerCase() == "br") {
 				let node = {nodeName, attrs, childNodes: []};
 				if (stack.length === 0) tree.push(node);
 				else stack[stack.length - 1].childNodes.push(node);
 			} else {
-				stack.push({nodeName, attrs, childNodes: []});
+				let isPre = false;
+				if (/white-space:\s*pre/.test(attrs.style)) isPre = true;
+				if (!/white-space:/.test(attrs.style) && stack.length && stack[stack.length - 1].isPre)
+					isPre = true;
+				stack.push({nodeName, attrs, childNodes: [], isPre});
 			}
 		}
 		prev = m;
@@ -1481,7 +1493,7 @@ export function parseXML(xml) {
 
 /**
  * 生成xml字符串
- * @param {string} xml
+ * @param {parseXMLNode} xml
  **/
 export function stringifyXML(xml) {
 	if (!xml) return "";
@@ -1491,7 +1503,7 @@ export function stringifyXML(xml) {
 	if (!nodeName) return stringifyXML(childNodes);
 	let str = `<${nodeName}`;
 	for (let key in attrs) {
-		str += ` ${key}="${attrs[key]}"`;
+		str += ` ${key}="${encodeHTML(attrs[key])}"`;
 	}
 	str += ">";
 	str += stringifyXML(childNodes);
@@ -1550,4 +1562,74 @@ export function CamelCase(str) {
 	return str.replace(/(^|[-_])(\w)/g, function (all, x1, letter) {
 		return letter.toUpperCase();
 	});
+}
+
+export function formatError(obj) {
+	if (obj && typeof obj === "object") {
+		if (typeof obj.msg === "string") return obj.msg;
+		if (typeof obj.message === "string") return obj.message;
+		if (typeof obj.error === "string") return obj.error;
+		for (let k in obj) {
+			let v = obj[k];
+			if (typeof v === "string") return v;
+		}
+		for (let k in obj) {
+			let v = obj[k];
+			if (v && typeof v === "object") return formatError(v);
+		}
+	}
+	return obj + "";
+}
+
+/**
+ * 将 1,3,5-8,10,12-15 转换为 [1,3,5,6,7,8,10,12,13,14,15]
+ * @param {string} str
+ * @returns {number[]}
+ */
+export function decodePage(str) {
+	let arr = [];
+	if (!str) return arr;
+	str.split(",").forEach((item) => {
+		let [start, end] = item.split("-");
+		if (end) {
+			for (let i = parseInt(start); i <= parseInt(end); i++) {
+				arr.push(i);
+			}
+		} else {
+			arr.push(parseInt(start));
+		}
+	});
+	return arr;
+}
+
+/**
+ * 将 [1,3,5,6,7,8,10,12,13,14,15] 转换为 1,3,5-8,10,12-15
+ * @param {number[]} arr
+ * @returns {string}
+ */
+export function encodePage(arr) {
+	if (!arr || !arr.length) return "";
+	arr = arr.sort((a, b) => a - b);
+	let str = "";
+	let start = arr[0];
+	let end = start;
+	for (let i = 1; i < arr.length; i++) {
+		if (arr[i] === end + 1) {
+			end = arr[i];
+		} else {
+			if (start === end) {
+				str += start + ",";
+			} else {
+				str += start + "-" + end + ",";
+			}
+			start = arr[i];
+			end = start;
+		}
+	}
+	if (start === end) {
+		str += start;
+	} else {
+		str += start + "-" + end;
+	}
+	return str;
 }

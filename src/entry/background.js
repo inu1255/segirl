@@ -1,25 +1,7 @@
 import {caiyunTranslate, translate} from "@/common/api";
 import config from "../common/config";
 
-if (process.env.NODE_ENV === "development") {
-	require("crx-hotreload");
-}
-
 const isFirefox = /firefox/i.test(navigator.userAgent);
-
-chrome.contextMenus.removeAll();
-chrome.contextMenus.create({
-	id: "segirl",
-	title: "召唤划姬",
-	contexts: ["all"],
-	onclick(info, tab) {
-		if (info.selectionText)
-			chrome.tabs.create({
-				url: chrome.runtime.getURL("pages/popup.html") + "#" + info.selectionText,
-			});
-		else chrome.tabs.sendMessage(tab.id, "menu");
-	},
-});
 
 const translate_cache = {};
 chrome.runtime.onMessage.addListener(function (info, sender, cb) {
@@ -91,7 +73,7 @@ chrome.webRequest.onBeforeSendHeaders.addListener(
 		}
 	},
 	{urls: ["<all_urls>"], types: ["xmlhttprequest"]},
-	isFirefox ? ["blocking", "requestHeaders"] : ["blocking", "requestHeaders", "extraHeaders"]
+	isFirefox ? ["requestHeaders"] : ["requestHeaders", "extraHeaders"]
 );
 
 chrome.webRequest.onHeadersReceived.addListener(
@@ -117,5 +99,5 @@ chrome.webRequest.onHeadersReceived.addListener(
 		}
 	},
 	{urls: ["<all_urls>"], types: ["xmlhttprequest"]},
-	["blocking", "responseHeaders"]
+	["responseHeaders"]
 );

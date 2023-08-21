@@ -1,6 +1,8 @@
 const path = require("path");
 const fs = require("fs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const manifest = require("./src/manifest");
+const pkg = require("./package.json");
 
 const isDevMode = process.env.NODE_ENV === "development";
 
@@ -19,6 +21,7 @@ module.exports = {
 						transform(content, path) {
 							var mod = {exports: {}};
 							new Function("module", "exports", content.toString())(mod, mod.exports);
+							mod.exports.version = pkg.version;
 							return JSON.stringify(mod.exports, null, 2);
 						},
 					},
@@ -35,7 +38,8 @@ module.exports = {
 	},
 	configureWebpack(config) {
 		console.log("configureWebpack");
-		config.entry.background = path.join(__dirname, "./src/entry/background.js");
+		if (manifest.manifest_version == 3)
+			config.entry.background = path.join(__dirname, "./src/entry/background.js");
 		if (isDevMode) {
 			config.devtool = "source-map";
 		}
@@ -50,8 +54,9 @@ function getPages() {
 
 	fs.readdirSync(path.resolve(`src/entry`)).forEach((name) => {
 		const fileName = path.basename(name, path.extname(name));
-		if (fileName == "background") return;
+		if (manifest.manifest_version == 3 && fileName == "background") return;
 		pages[fileName] = {
+			title: manifest.name,
 			entry: `src/entry/${name}`,
 			template: "public/index.html",
 			filename: `${fileName}.html`,

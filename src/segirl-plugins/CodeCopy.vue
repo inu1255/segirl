@@ -42,8 +42,13 @@ export default {
 	},
 	mounted() {
 		var cover = document.createElement("pre");
-		cover.setAttribute("style", "background:rgba(153,197,230,0.8);position:fixed;display:none;");
+		cover.setAttribute(
+			"style",
+			"background:rgba(153,197,230,0.8);position:fixed;top:0;left:0;display:none;margin:0 !important;color:red;overflow:visible;white-space:pre-wrap;z-index:97000;pointer-events:none;"
+		);
 		document.body.appendChild(cover);
+		var rect = cover.getBoundingClientRect();
+		cover.style.transform = `translate(-${rect.left}px, -${rect.top}px)`;
 		this.cover = cover;
 		document.addEventListener("mousedown", () => {
 			cover.style.display = "none";
@@ -54,8 +59,8 @@ export default {
 			var cover = this.cover;
 			var rect = item.getBoundingClientRect();
 			cover.style.display = "block";
-			cover.style.top = rect.top + "px";
-			cover.style.left = rect.left + "px";
+			cover.style.top = Math.max(rect.top, 0) + "px";
+			cover.style.left = Math.max(rect.left, 0) + "px";
 			cover.style.width = rect.width + "px";
 			cover.style.height = rect.height + "px";
 			cover.innerText = item.innerText.replace(/\n\n/g, "\n");
@@ -79,7 +84,9 @@ export default {
 <style lang="less">
 .segirl-plugins-codecopy {
 	button {
-		margin-right: 5px;
+		margin: 0 !important;
+		margin-right: 5px !important;
+		color: #000;
 	}
 }
 </style>

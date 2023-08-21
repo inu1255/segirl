@@ -1,7 +1,7 @@
 <template>
 	<div v-show="show" class="__segirl-app" :style="{left: pos.x + 'px', top: pos.y + 'px'}">
 		<div v-show="show == 1" class="__segirl-controller" @mousedown="doMove">
-			<img :src="$url(`icons/128.png`)" @dragstart.prevent />
+			<img :src="icon" @dragstart.prevent />
 		</div>
 		<div v-show="show == 2" class="__segirl-container">
 			<plugin-box v-for="(item, i) in list" v-show="item.show" :key="i" :name="item.title">
@@ -41,6 +41,7 @@ export default {
 			text:
 				location.protocol == "chrome-extension:" ? decodeURIComponent(location.hash.slice(1)) : "",
 			el: null,
+			icon: chrome.runtime.getURL("icons/128.png"),
 		};
 	},
 	computed: {},

@@ -1,6 +1,5 @@
-module.exports = {
+const manifest = {
 	name: "划姬",
-	version: "1.0.2",
 	description: "不止是划词翻译,你的划词贤内助",
 	author: "inu1255",
 	homepage_url: "https://github.com/inu1255/segirl",
@@ -15,11 +14,11 @@ module.exports = {
 		// 'unlimitedStorage',
 		"storage",
 		"notifications",
+		"scripting",
 		// 'identity',
 		// 'identity.email',
 		"offscreen",
 		"webRequest",
-		"webRequestBlocking",
 	],
 	host_permissions: ["https://fanyi.sogou.com/"],
 	optional_host_permissions: ["*://*/*"],
@@ -50,3 +49,11 @@ module.exports = {
 		},
 	],
 };
+
+if (manifest.manifest_version == 2) {
+	delete manifest.host_permissions;
+	let permissions_v3 = new Set(["offscreen"]);
+	manifest.permissions = manifest.permissions.filter((x) => !permissions_v3.has(x));
+}
+
+module.exports = manifest;

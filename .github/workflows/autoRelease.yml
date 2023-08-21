@@ -1,0 +1,130 @@
+name: autoRelease
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  setup-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2.3.3
+
+      - name: Add compare versions package
+        run: npm install compare-versions
+
+      - name: Get package version
+        uses: actions/github-script@v3.0.0
+        id: get-package-version
+        with:
+          result-encoding: string
+          script: |
+            const package = require(`${process.env.GITHUB_WORKSPACE}/package.json`);
+            return package.version;
+
+      - name: Get latest release
+        uses: actions/github-script@v3.0.0
+        id: get-latest-release
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          result-encoding: string
+          script: |
+            try {
+                var latestRelease = await github.repos.getLatestRelease({ owner: context.repo.owner, repo: context.repo.repo });
+                return latestRelease.data.tag_name;
+            } catch (error) {
+                if (error.message === 'Not Found') {
+                    return '0.0.0';
+                } else {
+                    core.setFailed(error.message)
+                }
+            }
+
+      - name: Compare version
+        uses: actions/github-script@v3.0.0
+        id: comparison1
+        env:
+          currentVersion: ${{ steps.get-package-version.outputs.result }}
+          latestRelease: ${{ steps.get-latest-release.outputs.result }}
+        with:
+          script: |
+            const compareVersions = require(`${process.env.GITHUB_WORKSPACE}/node_modules/compare-versions`);
+            var currentVersion = `${process.env.currentVersion}`;
+            var latestRelease = `${process.env.latestRelease}`;
+            return compareVersions.compare(currentVersion, latestRelease, ">");
+
+      - name: setup and build
+        if: steps.comparison1.outputs.result == 'true'
+        id: setup
+        run: |
+          npm install
+          npm run build
+
+      - name: Get manifest version
+        if: steps.setup.outcome == 'success'
+        uses: actions/github-script@v3.0.0
+        id: get-manifest-version
+        with:
+          result-encoding: string
+          script: |
+            const manifest = require(`${process.env.GITHUB_WORKSPACE}/dist/manifest.json`);
+            return manifest.version;
+
+      - name: Compare version again
+        if: steps.get-manifest-version.outcome == 'success'
+        uses: actions/github-script@v3.0.0
+        id: comparison2
+        env:
+          currentVersion: ${{ steps.get-manifest-version.outputs.result }}
+          latestRelease: ${{ steps.get-latest-release.outputs.result }}
+        with:
+          script: |
+            const compareVersions = require(`${process.env.GITHUB_WORKSPACE}/node_modules/compare-versions`);
+            var currentVersion = `${process.env.currentVersion}`;
+            var latestRelease = `${process.env.latestRelease}`;
+            return compareVersions.compare(currentVersion, latestRelease, ">");
+
+      - name: Get Changelog
+        if: steps.comparison2.outcome == 'success' && steps.comparison2.outputs.result == 'true'
+        id: changelog-reader
+        uses: mindsers/changelog-reader-action@v2.0.0
+        with:
+          version: ${{ steps.get-manifest-version.outputs.result }}
+          path: ./CHANGELOG.md
+
+      - name: Create Release
+        if: steps.changelog-reader.outcome == 'success'
+        id: create_release
+        uses: actions/create-release@v1.1.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.changelog-reader.outputs.version }}
+          release_name: Release v${{ steps.get-manifest-version.outputs.result }}
+          body: ${{ steps.changelog-reader.outputs.changes }}
+          draft: ${{ steps.changelog-reader.outputs.status == 'unreleased' }}
+          prerelease: ${{ steps.changelog-reader.outputs.status == 'prereleased' }}
+
+      - name: Upload Release Asset
+        if: steps.create_release.outcome == 'success'
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1.0.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./build.zip
+          asset_name: build_v${{ steps.get-manifest-version.outputs.result }}.zip
+          asset_content_type: application/zip
+
+      - name: Build gh-pages
+        if: steps.upload-release-asset.outcome == 'success'
+        uses: peaceiris/actions-gh-pages@v3.6.4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          full_commit_message: Release v${{ steps.get-manifest-version.outputs.result }}

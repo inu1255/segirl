@@ -166,7 +166,7 @@ export function dataURLtoBlob(dataurl) {
 export function request(method, url, data, responseType) {
 	return new Promise(function (resolve, reject) {
 		var xhr = new XMLHttpRequest();
-		xhr.open("GET", url, true);
+		xhr.open(method.toUpperCase(), url, true);
 		xhr.responseType = responseType;
 		xhr.onload = function () {
 			if (xhr.status == 200) {
@@ -1063,13 +1063,15 @@ export function selectIt(downEvent, opt) {
  * })
  */
 export async function zipAll(files, type = "blob") {
-	let {zip} = await import("fflate");
+	let {zip} = await loadjs("fflate.min.js", "fflate");
 	for (let key in files) {
 		let file = files[key];
-		if (/^(https?|data):\/\//.test(file)) {
+		if (/^(https?:\/\/|data:)/.test(file)) {
 			files[key] = await http_get(file, "arraybuffer").then((x) => new Uint8Array(x));
 		} else if (file instanceof Blob) {
 			files[key] = await readFileAsArrayBuffer(file).then((x) => new Uint8Array(x));
+		} else if (typeof file === "string") {
+			files[key] = Buffer.from(file);
 		}
 	}
 	return new Promise((resolve, reject) => {
@@ -1085,7 +1087,7 @@ export async function zipAll(files, type = "blob") {
  * @param {string|string[]} [filenames] 指定要解压的文件名,默认全部解压
  */
 export async function unzipAll(file, filenames = []) {
-	let {Unzip, AsyncUnzipInflate} = await import("fflate");
+	let {Unzip, AsyncUnzipInflate} = await loadjs("fflate.min.js", "fflate");
 	if (file instanceof Blob) file = await readFileAsArrayBuffer(file);
 	if (file instanceof ArrayBuffer) file = new Uint8Array(file);
 	if (typeof filenames === "string") filenames = [filenames];

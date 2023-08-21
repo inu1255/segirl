@@ -32,13 +32,11 @@
   },
   "include": [
     "src",
+    "static",
     "@types"
   ],
   "exclude": [
     "node_modules",
-    ".nuxt",
-    "dist",
-    "src/static",
-    "src/static-dist"
+    "dist"
   ]
 }
