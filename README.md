@@ -1,19 +1,29 @@
-# segirl_v3
+# 滑姬
 
-## Project setup
-```
-npm install
-```
+滑姬是一个浏览器插件, 选中文字后会弹出滑姬图标, 点击滑姬图标可以执行翻译等操作。
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## 超级复制
 
-### Compiles and minifies for production
-```
-npm run build
-```
+`Alt+右键` 超级复制面板
+![超级复制](./static/supercopy.png)
+对于网页上想复制的内容，按住`Alt`再点击鼠标右键，就可以弹出超级复制面板。
+超级复制面板会列出选中区域可复制的所有元素, 鼠标放上去会高亮显示, 点击即可复制。
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 选中后的功能
+
+1. base64解码
+   aHR0cHM6Ly9naXRodWIuY29tL2ludTEyNTUvc2VnaXJs
+	 ![base64解码](./static/base64.png)
+2. 时间戳转换
+	 1629811200
+	 ![时间戳转换](./static/datetime.png)
+3. 二进制查看器
+	 01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100 00100001
+	 ![二进制查看器](./static/binary.png)
+4. IP地址查询
+   8.8.8.8
+	 ![IP地址查询](./static/ip.png)
+5. 翻译
+	 Hello World!
+	 ![翻译](./static/translate.png)
+

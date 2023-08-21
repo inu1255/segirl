@@ -84,8 +84,7 @@ export default {
 <style lang="less">
 .segirl-plugins-codecopy {
 	button {
-		margin: 0 !important;
-		margin-right: 5px !important;
+		margin: 0 5px 5px 0 !important;
 		color: #000;
 	}
 }

@@ -41,8 +41,11 @@ export default {
 			let date;
 			let text = this.text;
 			if (!/\d/.test(text)) return;
-			if (/^\d+$/.test(text)) date = new Date(+text);
-			else {
+			if (/^\d+$/.test(text)) {
+				text = +text;
+				if (text < 1e12) text *= 1e3;
+				date = new Date(text);
+			} else {
 				text = text
 					.replace(/-/g, "/")
 					.replace(/年/, "/")
